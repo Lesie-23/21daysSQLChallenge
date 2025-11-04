@@ -1,0 +1,49 @@
+ # 💻 Day 2 of my 21 Days SQL Challenge – Filtering Data with the WHERE Clause
+
+Today’s focus was on one of the most powerful tools in SQL — the **WHERE clause**.  
+It’s what makes your queries smart, pulling out only the data that matters.
+
+## A few takeaways I’m keeping in mind:
+
+. The **WHERE** clause filters out the noise — you decide what data you actually want to see.
+. Use **IN** instead of multiple ORs — cleaner, faster, easier to read.
+. **BETWEEN** includes both ends (e.g. `WHERE age BETWEEN 18 AND 65`). 
+. Always use **single quotes** for text, not numbers.  
+  - ✅ WHERE age = 50  
+  - ✅ WHERE service = 'Surgery'
+. Never use = NULL — it’s IS NULL or IS NOT NULL.
+. Parentheses `()` are crucial when combining **AND** / **OR** to avoid logic errors.
+
+
+ ## Pratice Questions:
+
+-- 1.Find all patients who are older than 60 years.
+select * from patients
+where age > 60;
+
+-- 2.Retrieve all staff members who work in the 'Emergency' service.
+select * from staff
+where service  = 'Emergency';
+
+-- 3. List all weeks where more than 100 patients requested admission in any service.
+select
+	week,
+	service,
+	patients_request as total_patients
+from services_weekly
+where patients_request > 100
+order by 
+	week, patients_request desc;
+
+-- Day 2  Question: Find all patients admitted to 'Surgery' service with a satisfaction score below 70, 
+-- showing their patient_id, name, age, and satisfaction score.
+
+select 
+	patient_id,
+	name,
+	age,
+	satisfaction as satisfaction_score
+from patients
+where service = 'Surgery' and satisfaction < 70;
+
+
