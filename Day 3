@@ -1,0 +1,44 @@
+Day 3 - Sorting Data with ORDER BY
+
+Focus: ORDER BY, ASC/DESC, multi-column sorting
+
+Learnings:
+
+Learnings:
+✅ Sorting by a single column: DESC shows highest values first, ASC shows lowest/earliest first.
+✅ Sorting by multiple columns: SQL sorts sequentially — first column is primary, second breaks ties.
+✅ NULL values usually appear first (ASC) or last (DESC).
+✅ ORDER BY is usually the last clause in a query (except LIMIT).
+
+✅ Practice Questions:
+
+-- 1.List all patients sorted by age in descending order(oldest first).
+select
+*
+from patients
+order by age desc;
+
+-- 2. Show all services_weekly data sorted by week number (earliest first) ascending and patients_request descending (highest first within week).
+select
+*
+from services_weekly
+order by week asc, patients_request desc;
+
+-- 3. Display staff members sorted alphabetically by their names(A-Z).
+select
+*
+from staff
+order by staff_name asc;
+
+-- Day 3  Question: Retrieve the top 5 weeks with the highest patient refusals across all services, showing week, service, patients_refused, and patients_request. 
+-- Sort by patients_refused in descending order.
+
+select
+week,
+service,
+patients_refused,
+patients_request
+from services_weekly
+order by patients_refused desc
+limit 5 ;
+
