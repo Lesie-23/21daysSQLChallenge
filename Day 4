@@ -1,0 +1,43 @@
+ Day 4 – LIMIT & OFFSET
+
+Focus: Controlling result sets, pagination, and fetching specific slices of data.
+
+✅ Learnings:
+
+- LIMIT n restricts the number of rows returned.
+- OFFSET n skips a specified number of rows before fetching results.
+- LIMIT + OFFSET allows exploring large datasets in manageable chunks, fetching top-N records, or paginating results.
+- LIMIT and OFFSET, especially when combined with ORDER BY, give precise control over large datasets, making analysis efficient and helping you focus on the records that matter most.
+
+✅ Practice Questions:
+
+-- 1.Display the first 5 patients from the patients table.
+select
+*
+from patients
+Limit 5;
+
+-- 2.Show patients 11-20 using OFFSET.
+select
+*
+from patients
+order by patient_id
+limit 10 offset 10;
+
+-- 3.Get the 10 most recent patient admissions based on arrival_date.
+SELECT patient_id, name, arrival_date
+FROM patients
+ORDER BY arrival_date DESC
+LIMIT 10;
+
+
+-- Day 4  Question:Find the 3rd to 7th highest patient satisfaction scores from the patients table, showing patient_id, name, service, and satisfaction.Display only these 5 records.
+
+select
+patient_id,
+name,
+service,
+satisfaction as satisfaction_score
+from patients
+order by satisfaction desc
+Limit 5 offset 2;
