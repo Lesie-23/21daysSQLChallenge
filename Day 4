@@ -37,7 +37,7 @@ select
 patient_id,
 name,
 service,
-satisfaction as satisfaction_score
+satisfaction 
 from patients
 order by satisfaction desc
 Limit 5 offset 2;
