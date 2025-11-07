@@ -1,0 +1,45 @@
+Day 5 – Aggregate Functions (COUNT, SUM, AVG, MIN, MAX, ROUND)
+
+Focus: Summarizing data and deriving insights through numerical calculations.
+
+✅ Learnings:
+
+-Alias your aggregates for readable column names.
+
+* COUNT Functions:
+- COUNT(*) → counts all rows (including NULLs)
+- COUNT(column) → counts non-NULL values
+- COUNT(DISTINCT column) → counts unique non-NULL values
+
+* Numeric Aggregates:
+- SUM(column) → total of numeric values
+- AVG(column) → average of numeric values
+- MIN(column) → minimum value
+- MAX(column) → maximum value
+- ROUND(column, n) → round numeric results to n decimals
+
+✅ Practice Questions:
+
+-- 1. Count the total number of patients in the hospital.
+Select
+count(patient_id) as total_number_of_patients
+from patients;
+
+-- 2.Calculate the average satisfaction score of all patients.
+select
+round(avg(satisfaction),2) as satisfaction_score
+from patients;
+
+-- 3.Find the minimum and maximum age of patients.
+select
+min(age) as min_age,
+max(age) as max_age
+from patients;
+
+-- Day 5  Question: Calculate the total number of patients admitted, total patients refused, and the average patient satisfaction across all services and weeks. 
+-- Round the average satisfaction to 2 decimal places.
+select
+sum(patients_admitted) as total_patients_admit,
+sum(patients_refused) as total_patients_refuse,
+round(avg(patient_satisfaction),2) as avg_patient_satisfied
+from services_weekly;
