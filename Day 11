@@ -1,0 +1,42 @@
+Day 11 – DISTINCT & Handling Duplicates
+
+Focus: Understanding when DISTINCT actually solves a problem and when it’s just covering up a bad query.
+
+✅ Learnings:
+
+- DISTINCT returns unique combinations of the selected columns.
+- It applies to the entire row, not individual columns.
+- Use COUNT(DISTINCT col) to count unique values inside groups.
+- Prefer GROUP BY when you need aggregations; DISTINCT when you need straightforward uniqueness.
+- NULL is treated as equal, so only one NULL appears in DISTINCT results.
+- Use DISTINCT only when you truly need unique rows. The database has to sift through all the data to remove duplicates, and that extra work can slow things down—especially when the table grows large.
+
+✅ Practice Questions:
+
+-- 1. List all unique services in the patients table.
+select
+distinct service
+from patients;
+
+-- 2. Find all unique staff roles in the hospital.
+select
+distinct role
+from staff;
+
+-- 3. Get distinct months from the services_weekly table.
+select
+distinct month
+from services_weekly;
+
+/* Day 11 Question: Find all unique combinations of service and event type from the services_weekly table where events are not null or none, 
+ along with the count of occurrences for each combination. 
+ Order by count descending.*/
+ 
+Select
+service,
+event,
+count(*) as combo_count
+from services_weekly
+where event is not null and lower(event)  <> 'none'
+group by service, event
+order by combo_count desc;
