@@ -1,0 +1,63 @@
+Day 14 – LEFT JOIN & RIGHT JOIN
+
+Focus: Include all rows from one table and matched rows from the other, handling unmatched records.
+
+✅ Learnings:
+
+- LEFT JOIN returns all rows from the left table and matching rows from the right table (NULL if no match).
+- RIGHT JOIN returns all rows from the right table and matching rows from the left table (NULL if no match).
+- Use COALESCE to replace NULLs with default values.
+- Find unmatched rows using WHERE column IS NULL.
+- Can rewrite RIGHT JOIN as LEFT JOIN by swapping tables.
+- ON defines join conditions; WHERE applies additional filters after joining.
+- LEFT JOIN is more common than RIGHT JOIN in practice.
+
+✅ Practice Questions:
+-- 1.Show all staff members and their schedule information (including those with no schedule entries).
+select
+	s.staff_id,
+	s.staff_name,
+	s.role,
+	s.service,
+	st.week,
+	st.present
+from staff as s
+Left join staff_schedule as st
+on s.staff_id = st.staff_id;
+
+-- 2. List all services from services_weekly and their corresponding staff (show services even if no staff assigned).
+select
+	sw.service,
+	s.staff_id,
+    s.staff_name
+from services_weekly as sw
+left join staff as s
+on sw.service = s.service;
+
+-- 3.Display all patients and their service's weekly statistics (if available).
+select
+	p.patient_id,
+	p.name as patient_name,
+	p.age,
+	p.service,
+	sw.week,
+	sw.patient_satisfaction,
+	sw.patients_admitted
+from patients as p
+left join services_weekly as sw
+on p.service = sw.service;
+
+
+/* Day 14 Question: Create a staff utilisation report showing all staff members (staff_id, staff_name, role, service) and the count of weeks they were present (from staff_schedule).
+ Include staff members even if they have no schedule records. Order by weeks present descending.*/
+ select
+	s.staff_id,
+	s.staff_name,
+	s.role,
+	s.service,
+	sum(coalesce(st.present, 0)) as  weeks_present
+from staff as s
+left join staff_schedule as st
+on s.staff_id = st.staff_id
+group by s.staff_id,s.staff_name,s.role,s.service
+order by weeks_present desc;
