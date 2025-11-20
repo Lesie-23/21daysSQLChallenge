@@ -1,5 +1,5 @@
    
-🍕 The Great Pizza Analytics Challenge
+ 🍕 The Great Pizza Analytics Challenge
 
 Welcome to The Great Pizza Analytics Challenge, a SQL mini-project designed to strengthen database querying skills through structured exploration, filtering, and sales analysis.
 
@@ -146,7 +146,7 @@ on p1.pizza_type_id = p2.pizza_type_id
 and p1.size < p2.size
 order by p1.pizza_id,size1,size2;
 
-Insights:
+✅ Insights:
 1. The average price of pizza is 16.44.
 2. Catergories with more than 5000 qty of pizzas sold are classic - 14,888,veggie - 11,649, supreme - 11,987 and chicken - 11,050.
 3. The total quantity of pizzas sold where 49,574.
