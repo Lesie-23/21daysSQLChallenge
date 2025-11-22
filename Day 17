@@ -1,0 +1,71 @@
+Day 17 – Subqueries in SELECT & FROM Clauses
+
+Focus: Using subqueries as calculated columns and derived tables.
+
+✅ Learnings:
+
+- SELECT clause: Subqueries return a single value per row (calculated columns).
+- FROM clause: Subqueries create derived tables for intermediate results — always alias them.
+- Correlated subqueries: Execute once per row → can be slow on large datasets.
+- Derived tables: Help organize complex logic; CTEs are often cleaner and more readable.
+
+✅ Practice Questions:
+ -- 1. Show each patient with their service's average satisfaction as an additional column.
+   select
+   p.patient_id,
+   p.service,
+   p.satisfaction,
+   (select avg(p2.satisfaction)
+   from patients p2
+   where p2.service = p.service) as avg_satisfaction
+   from patients p;
+
+ -- 2. Create a derived table of service statistics and query from it.
+ SELECT                                                              
+    p.service,
+    p.total_patients,
+    p.avg_satisfaction
+from (
+      select service,
+             count(patient_id) as total_patients,
+             avg(satisfaction) as avg_satisfaction
+       from patients
+       group by service
+	) as p;                                     
+ 
+ -- 3. Display staff with their service's total patient count as a calculated field.
+select
+ s.staff_id,
+    s.staff_name,
+    s.service,
+    ( 
+      select count(patient_id)
+      from patients p
+      where p.service = s.service
+      ) total_patients_service
+from staff s;
+
+/* Day 17 Question:Create a report showing each service with: service name, total patients admitted, the difference between their total admissions 
+and the average admissions across all services, and a rank indicator ('Above Average', 'Average', 'Below Average'). 
+Order by total patients admitted descending.*/
+
+select
+s.service,
+s.total_admitted,
+case when s.total_admitted > overall.avg_admitted then 'Above Average'
+     when s.total_admitted =  overall.avg_admitted then 'Average'
+     else 'Below Average'
+     end as rank_indicator
+from 
+     (
+       select 
+       service,
+       sum(patients_admitted) as total_admitted
+     from services_weekly
+     group by service) as s
+cross join (
+          select 
+              avg(patients_admitted) as avg_admitted
+		  from services_weekly) as overall
+order by s.total_admitted desc;
+
