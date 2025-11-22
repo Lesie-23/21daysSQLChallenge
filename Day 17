@@ -7,7 +7,7 @@ Focus: Using subqueries as calculated columns and derived tables.
 - SELECT clause: Subqueries return a single value per row (calculated columns).
 - FROM clause: Subqueries create derived tables for intermediate results — always alias them.
 - Correlated subqueries: Execute once per row → can be slow on large datasets.
-- Derived tables: Help organize complex logic; CTEs are often cleaner and more readable.
+- Derived tables: Help organize complex logic.
 
 ✅ Practice Questions:
  -- 1. Show each patient with their service's average satisfaction as an additional column.
