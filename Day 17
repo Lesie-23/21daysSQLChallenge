@@ -52,6 +52,7 @@ Order by total patients admitted descending.*/
 select
 s.service,
 s.total_admitted,
+round(s.total_admitted -  overall.avg_admitted,2) as differnece,
 case when s.total_admitted > overall.avg_admitted then 'Above Average'
      when s.total_admitted =  overall.avg_admitted then 'Average'
      else 'Below Average'
@@ -65,7 +66,13 @@ from
      group by service) as s
 cross join (
           select 
-              avg(patients_admitted) as avg_admitted
-		  from services_weekly) as overall
+              avg(total_admitted) as avg_admitted
+		  from (
+             select
+              sum(patients_admitted) as total_admitted
+		  from services_weekly
+          group by service
+          )as s
+          ) as overall
 order by s.total_admitted desc;
 
