@@ -1,0 +1,79 @@
+Day 18 – UNION & UNION ALL
+
+Focus: Combining results from multiple SELECT statements into a single result set.
+
+✅ Learnings:
+
+- UNION: Combines results and removes duplicate rows → slower due to deduplication.
+- UNION ALL: Combines results and keeps all rows including duplicates → faster, preferred when duplicates are impossible or irrelevant.
+- Column requirements:
+     - Same number of columns in each SELECT.
+     - Compatible data types in corresponding columns.
+     - Column names from the first SELECT are used in the final result.
+- Use literals to identify the source (e.g., 'Patient', 'Staff', 'High', 'Low').
+- ORDER BY applies only to the final combined result, not individual SELECTs.
+- Best practice: Use UNION ALL whenever possible to avoid unnecessary deduplication and improve performance.
+
+✅ Practice Questions:
+
+-- 1.Combine patient names and staff names into a single list.
+select
+name as full_name,
+'Patient' AS type,
+service
+from patients
+union all
+select
+staff_name as full_name,
+'Staff' AS type,
+service
+from staff
+order by service,type, full_name;
+
+-- 2. Create a union of high satisfaction patients (>90) and low satisfaction patients (<50).
+select
+service,
+patient_satisfaction,
+'High' as category 	
+from services_weekly
+where patient_satisfaction > 90 
+Union  all
+select
+service,
+patient_satisfaction,
+'Low' as category 	
+from services_weekly
+where patient_satisfaction < 50
+order by patient_satisfaction ;
+
+-- 3.List all unique names from both patients and staff tables.
+select
+name as unique_name
+from patients
+union 
+select
+ staff_name as unique_name
+from staff;
+
+
+/*. Day 18 Question: Create a comprehensive personnel and patient list showing: identifier (patient_id or staff_id), full name, type ('Patient' or 'Staff'), and associated service. 
+Include only those in 'surgery' or 'emergency' services.
+ Order by type, then service, then name.*/
+ 
+ select
+	patient_id as id,
+	name as full_name,
+	'Patient' as type,
+	service
+ from patients
+ where service in ('surgery' , 'emergency')
+ union all
+ select
+	staff_id  as id,
+	staff_name as full_name,
+	'Staff' as type,
+	service
+ from staff
+ where service in ('surgery' , 'emergency')
+ order by type, service, full_name;
+
