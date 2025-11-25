@@ -10,7 +10,6 @@ Focus: Assign ranks or row numbers within partitions without collapsing rows.
 - PARTITION BY splits data into groups; optional.
 - ORDER BY in OVER() determines ranking within each partition.
 - Window functions do not reduce the number of rows; each input row produces an output row.
-- Use subqueries or CTEs to filter ranked results (e.g., top 3 per group).
 
 ✅ Practice Questions:
 
