@@ -1,0 +1,57 @@
+Day 19 – Window Functions: ROW_NUMBER, RANK, DENSE_RANK
+
+Focus: Assign ranks or row numbers within partitions without collapsing rows.
+
+✅ Learnings:
+- Window functions calculate across related rows without collapsing data, unlike GROUP BY.
+- ROW_NUMBER() gives unique sequential numbers; ideal when you need exact top N rows per group.
+- RANK() assigns the same rank to ties but leaves gaps; use when rank gaps matter.
+- DENSE_RANK() assigns the same rank to ties without gaps; useful for top-N groups where continuity matters.
+- PARTITION BY splits data into groups; optional.
+- ORDER BY in OVER() determines ranking within each partition.
+- Window functions do not reduce the number of rows; each input row produces an output row.
+- Use subqueries or CTEs to filter ranked results (e.g., top 3 per group).
+
+✅ Practice Questions:
+
+-- 1.Rank patients by satisfaction score within each service.
+select
+patient_id,
+name,
+service,
+satisfaction,
+rank() over (partition by service order by satisfaction desc) as rn
+from patients;
+
+-- 2. Assign row numbers to staff ordered by their name.
+select 
+staff_id,
+staff_name,
+service,
+row_number() over (partition by service order by staff_name desc) as rn
+from staff;
+
+-- 3.Rank services by total patients admitted.
+select 
+service,
+sum(patients_admitted) as total_patient_admitted,
+rank() over (order by sum(patients_admitted) desc) as admitted_rnk
+from services_weekly
+group by service;
+
+
+/*. Day 19 Question:For each service, rank the weeks by patient satisfaction score (highest first). 
+Show service, week, patient_satisfaction, patients_admitted, and the rank.
+ Include only the top 3 weeks per service.*/
+select	
+ *
+ from (
+ select 
+ week,
+ service,
+ patient_satisfaction,
+ patients_admitted,
+ dense_rank()  over(partition by service order by patient_satisfaction desc) as d_rnk
+ from services_weekly
+ ) as t
+ where  d_rnk <= 3;
