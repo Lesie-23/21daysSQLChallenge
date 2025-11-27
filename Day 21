@@ -1,0 +1,176 @@
+Day 21 - Common Table Expressions (CTEs)
+
+Focus: Making complex queries readable, maintainable, and reusable.
+
+✅ Learnings:
+
+- WITH clause / CTEs: Create temporary named result sets during query execution.
+- Readability: Break complex queries into clean, logical steps.
+- Nested CTEs: Depend on previous CTE results; cannot run independently.
+- Reference: CTEs can be referenced multiple times within a query.
+- Recursive CTEs: Useful for hierarchical or iterative data (e.g., org charts, bill of materials).
+- ORDER BY: Cannot be used inside CTEs (except with TOP/LIMIT in some DBs), but can be used in the main query.
+- Debugging & Maintenance: Test each CTE independently; use descriptive names.
+
+✅ Practice Questions:
+
+-- 1. Create a CTE to calculate service statistics, then query from it.
+with service_stats as (
+      select 
+          service,
+          sum(patients_admitted) as total_admissions,
+          round(avg(patient_satisfaction),2) as avg_satisfaction
+	  from services_weekly 
+      group by service
+      )
+select 
+    service,
+    total_admissions,
+    avg_satisfaction
+from service_stats
+where avg_satisfaction > 70
+order by total_admissions desc;
+
+-- 2.Use multiple CTEs to break down a complex query into logical steps.
+with patient_metrics as (
+   select
+     service,
+     count(*) as total_patients,
+     round(avg(age),2) as avg_age,
+     round(avg(satisfaction),2) as avg_satisfaction
+   from patients
+   group by service
+),
+ staff_metrics as (
+     select
+     service,
+     count(*) as total_staff
+   from staff
+   group by service
+),
+weekly_metrics as (
+    select
+     service,
+     sum(patients_admitted) as total_admitted,
+     sum(patients_refused) as total_refused
+   from services_weekly
+   group by service
+)
+select
+pm.service,
+pm.total_patients,
+pm.avg_age,
+pm.avg_satisfaction,
+sm.total_staff,
+wm.total_admitted,
+wm.total_refused,
+ROUND(
+    100.0 * COALESCE(wm.total_admitted, 0) /
+    NULLIF(
+        COALESCE(wm.total_admitted, 0) + COALESCE(wm.total_refused, 0),0),2) AS admission_rate
+from patient_metrics as pm
+left join staff_metrics as sm
+on pm.service = sm.service
+left join weekly_metrics as wm
+on pm.service = wm.service
+order by pm.avg_satisfaction desc;
+
+
+-- 3.Build a CTE for staff utilization and join it with patient data.
+with staff_metrics as (
+    select 
+       service,
+       count(*) as total_staff
+	from staff
+    group by service
+),
+patients_metrics as (
+   select 
+     service,
+     count(*) as total_patients,
+     round(avg(age),2) as avg_age,
+     round(avg(satisfaction),2) as avg_satisfaction
+   from patients
+   group by service
+),
+staff_utilization as (
+  select
+    sm.service,
+    sm.total_staff,
+    pm.total_patients,
+    pm.avg_age,
+    pm.avg_satisfaction,
+    ROUND(pm.total_patients * 1.0 / NULLIF(sm.total_staff, 0),2) AS patients_per_staff
+from staff_metrics as sm
+left join patients_metrics as pm
+on sm.service = pm.service
+)
+select
+service,
+total_staff,
+total_patients,
+avg_age,
+avg_satisfaction,
+patients_per_staff
+from staff_utilization
+order by avg_satisfaction DESC;
+
+
+/*. Day 21 Question: Create a comprehensive hospital performance dashboard using CTEs. 
+Calculate: 1) Service-level metrics (total admissions, refusals, avg satisfaction), 
+2) Staff metrics per service (total staff, avg weeks present), 
+3) Patient demographics per service (avg age, count). 
+Then combine all three CTEs to create a final report showing service name, all calculated metrics, 
+and an overall performance score (weighted average of admission rate and satisfaction). 
+Order by performance score descending.*/
+
+With Service_metrics as (
+          select service,
+          sum(patients_admitted) as total_admissions,
+          sum(patients_refused) as total_refusals,
+          round(avg(patient_satisfaction),2) as avg_satisfaction
+          from services_weekly group by service 
+), 
+Staff_metrics as (
+          select service,
+          count(*) as total_staff,
+          round(avg(week),2) as avg_weeks
+          from staff_schedule 
+          where present = 1 
+          group by service
+), 
+Patient_demographics as (
+        select service, 
+        round(avg(age),2) as avg_age, 
+        count(*) as total_patients
+        from patients 
+        group by service
+) 
+select 
+sm.service, 
+sm.total_admissions,
+ sm.total_refusals,
+ sm.avg_satisfaction,
+ st.total_staff,
+ st.avg_weeks,
+ pd.avg_age,
+ pd.total_patients,
+ROUND(
+    100.0 * sm.total_admissions / 
+    (sm.total_admissions + sm.total_refusals),
+2) AS admission_rate,
+ROUND(
+    (
+        100.0 * sm.total_admissions / (sm.total_admissions + sm.total_refusals)
+        + sm.avg_satisfaction
+    ) / 2,
+2) AS performance_score
+  from Service_metrics as sm
+  left join Staff_metrics as st
+  on sm.service = st.service 
+  left join Patient_demographics as pd
+  on sm.service = pd.service 
+  order by performance_score desc;
+
+
+
